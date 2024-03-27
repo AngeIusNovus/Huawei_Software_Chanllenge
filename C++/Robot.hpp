@@ -36,6 +36,10 @@ class Robot {
     }
   } to_robot[N][N];
 
+  ~Robot() {
+    while (!best_goods.empty()) best_goods.pop();
+  }
+
  public:
   Robot(int id) { this->robot_id = id; }
   void update(int x, int y, int free, int sts) {

@@ -33,7 +33,7 @@ class MyMap {
 
  public:
   static MyMap& GetMap() {
-    if (mp) mp = new MyMap();
+    if (mp == NULL) mp = new MyMap();
     return *mp;
   }
 

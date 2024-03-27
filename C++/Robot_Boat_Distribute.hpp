@@ -74,6 +74,7 @@ class MCMF {
     memset(sim, 0, sizeof(sim));
     memset(head, 0, sizeof(head));
   }
+  ~MCMF() {}
   void clear() {
     tot = 1;
     for (int i = 0; i < tot_nodes; ++i) {
@@ -136,6 +137,23 @@ class Robot_Boat_Distribute {
     return {ans, dest_berth};
   }
 
+  void robot_manage() {
+    for (int i = 0; i < robot_num; ++i) robot[i]->set_ideal_direction(-1);
+    for (int u = 0; u < robot_num; ++u) {
+      if (robot[u]->get_free()) {
+        int x = robot[u]->get_x(), y = robot[u]->get_y();
+        PFI tmp = get_best_berth(x, y);
+        assert(tmp.second >= 0 && tmp.second < berth_num);
+        robot[u]->set_ideal_direction(mp.get_to_berth_dir(tmp.second, x, y));
+        continue;
+      }
+      int v = mcmf.get_target();
+      int x = v / 200, y = v % 200;
+      robot[u]->set_ideal_direction(robot[u]->get_to_robot_dir(x, y));
+      robot[u]->set_dest_goods(mp.get_goods_id(x, y));
+    }
+  }
+
  public:
   Robot_Boat_Distribute(int n, int robot_num, int berth_num, int boat_num) {
     this->n = n;
@@ -143,6 +161,7 @@ class Robot_Boat_Distribute {
     this->berth_num = berth_num;
     this->boat_num = boat_num;
   }
+  ~Robot_Boat_Distribute() { delete (&mcmf); }
 
   void Init() {
     mp = MyMap::GetMap();
@@ -185,23 +204,6 @@ class Robot_Boat_Distribute {
     scanf("%s", okk);
     printf("OK\n");
     fflush(stdout);
-  }
-
-  void robot_manage() {
-    for (int i = 0; i < robot_num; ++i) robot[i]->set_ideal_direction(-1);
-    for (int u = 0; u < robot_num; ++u) {
-      if (robot[u]->get_free()) {
-        int x = robot[u]->get_x(), y = robot[u]->get_y();
-        PFI tmp = get_best_berth(x, y);
-        assert(tmp.second >= 0 && tmp.second < berth_num);
-        robot[u]->set_ideal_direction(mp.get_to_berth_dir(tmp.second, x, y));
-        continue;
-      }
-      int v = mcmf.get_target();
-      int x = v / 200, y = v % 200;
-      robot[u]->set_ideal_direction(robot[u]->get_to_robot_dir(x, y));
-      robot[u]->set_dest_goods(mp.get_goods_id(x, y));
-    }
   }
 
   int frame_input() {

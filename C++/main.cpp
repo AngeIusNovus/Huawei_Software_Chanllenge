@@ -19,5 +19,7 @@ int main() {
     scanf("%d%d", &frame_time, &money);
     RBD.frame_input();
   }
+  delete (&MyMap::GetMap());
+  delete (&Goods_Table::GetGT());
   return 0;
 }

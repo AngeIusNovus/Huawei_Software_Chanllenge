@@ -17,6 +17,7 @@ class Goods {
     this->val = val;
     tag = 0, dest_berth = -1;
   }
+  ~Goods() {}
   void clear() {
     MyMap &mp = MyMap::GetMap();
     mp.update_goods(x, y, 0);
@@ -43,8 +44,13 @@ class Goods_Table {
   }
 
  public:
+  ~Goods_Table() {
+    for (auto good : GT) {
+      delete (good);
+    }
+  }
   static Goods_Table &GetGT() {
-    if (goods_table) goods_table = new Goods_Table();
+    if (goods_table == NULL) goods_table = new Goods_Table();
     return *goods_table;
   }
   void insert(int x, int y, int val, int gen_time) {
